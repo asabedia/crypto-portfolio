@@ -1,0 +1,4 @@
+FROM postgres
+ENV POSTGRES_DB cryptodb
+ENV POSTGRES_USERNAME postgres
+ENV POSTGRES_PASSWORD password

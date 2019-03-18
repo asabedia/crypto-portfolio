@@ -1,0 +1,26 @@
+[
+    {
+        "model" : "price_prediction.User",
+        "pk" : 1,
+        "fields" : {
+            "username" : "Kevin224",
+            "first_name" : "Kevin",
+            "last_name" : "Smith",
+            "password" : "123456",
+            "budget" : 1000,
+            "created_date_time" : "2018-02-14 00:00:00"
+         }
+    },
+    {
+        "model" : "price_prediction.User",
+        "pk" : 2,
+        "fields" : {
+            "username" : "Jon2",
+            "first_name" : "Jon",
+            "last_name" : "Smith",
+            "password" : "123456",
+            "budget" : 1000,
+            "created_date_time" : "2018-02-14 00:00:00"
+         }
+    }
+]
