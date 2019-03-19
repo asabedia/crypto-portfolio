@@ -1,0 +1,18 @@
+[
+    {
+        "model" : "price_prediction.Coin",
+        "pk" : 1,
+        "fields" : {
+            "coin_id" : "123",
+            "name" : "Bitcoin"
+         }
+    },
+    {
+        "model" : "price_prediction.Coin",
+        "pk" : 2,
+        "fields" : {
+            "coin_id" : "124",
+            "name" : "Ether"
+         }
+    }
+]

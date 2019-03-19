@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'price_prediction',
-    'rest_framework'
+    'rest_framework',
+    'autofixture'
 ]
 
 MIDDLEWARE = [

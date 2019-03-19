@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from price_prediction.models import User, Generated_Portfolio, Coin, Coin_in_Generated_Portfolio
+from price_prediction.models import User, GeneratedPortfolio, Coin, Coin_in_Generated_Portfolio
 
 class UserSerializer (serializers.ModelSerializer):
     class Meta: 
@@ -8,10 +8,10 @@ class UserSerializer (serializers.ModelSerializer):
 
 class GeneratedPortfolioSerializer (serializers.ModelSerializer):
     class Meta: 
-        model = Generated_Portfolio
+        model = GeneratedPortfolio
         fields = '__all__'
 
-class CoinSerializer(serializers.Serializer):
+class CoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coin
         fields = '__all__'

@@ -1,0 +1,18 @@
+[
+    {
+        "model" : "price_prediction.GeneratedPortfolio",
+        "pk" : 1,
+        "fields" : {
+            "name" : "portfl1",
+            "created_date_time" : "Bitcoin"
+         }
+    },
+    {
+        "model" : "price_prediction.GeneratedPortfolio",
+        "pk" : 2,
+        "fields" : {
+            "coin_id" : "124",
+            "name" : "Ether"
+         }
+    }
+]

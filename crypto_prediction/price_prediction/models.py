@@ -9,10 +9,10 @@ class User(models.Model):
     budget = models.IntegerField(default=0)
     created_date_time = models.DateTimeField(auto_now_add=True)
 
-class Generated_Portfolio(models.Model):
+class GeneratedPortfolio(models.Model):
     name = models.CharField(max_length = 100)
     created_date_time = models.DateTimeField(auto_now_add=True)
-    associated_user_id = models.ForeignKey(User, on_delete = models.CASCADE)
+    associated_username = models.ForeignKey(User, on_delete = models.CASCADE)
     valid_until_date_time = models.DateTimeField()
     is_active = models.BooleanField()
 
@@ -21,7 +21,7 @@ class Coin(models.Model):
     name = models.CharField(max_length=30)
 
 class Coin_in_Generated_Portfolio:
-    portfolio_id = models.ForeignKey(Generated_Portfolio, on_delete = models.CASCADE)
+    portfolio_id = models.ForeignKey(GeneratedPortfolio, on_delete = models.CASCADE)
     coin_id = models.ForeignKey(Coin, on_delete = models.CASCADE)
     amount_purchased = models.FloatField()
     price_purhased = models.FloatField()
