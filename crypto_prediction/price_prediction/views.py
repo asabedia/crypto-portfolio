@@ -21,7 +21,7 @@ class GeneratedPortfolioList(generics.ListAPIView):
         print(username)
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         if username is not None:
-            return GeneratedPortfolio.objects.filter(associated_username=username)
+            return GeneratedPortfolio.objects.filter(associated_username=username, valid_until_date_time__gt=now)
         else: 
             return list()
 
