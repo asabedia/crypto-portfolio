@@ -1,21 +1,47 @@
-version: '3.5'
+version: '3'
 
 services:
-
-  client:
-    container_name: client
-    build:
-      context: .
-      dockerfile: ./crypto_prediction/frontend/Dockerfile
-    volumes:
-      - '.:/usr/src/app'
-      - '/usr/src/app/node_modules'
+  postgres:
+    build: ./crypto_prediction
+    networks:
+      - backend
     ports:
-      - '3000:3000'
+      - "5432:5432"
+    restart: always
+    hostname: postgres
+    container_name: postgres
+
+  crypto:
+    build: .
+    image: crypto:local
+    networks:
+      - backend
+      - frontend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: always
+    hostname: crypto
+    container_name: crypto
     environment:
-      - NODE_ENV=development
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cryptodb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
   
-  server: 
-    container_name: server
-    build: 
-      context: .
+
+  node:
+    build: ./crypto_prediction/frontend
+    command: ["npm", "start"]
+    depends_on:
+      - crypto
+    networks:
+      - frontend
+    ports:
+      - "3000:3000"
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge

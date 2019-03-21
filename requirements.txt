@@ -1,0 +1,5 @@
+Django
+django-autofixture
+djangorestframework
+psycopg2
+pytz
