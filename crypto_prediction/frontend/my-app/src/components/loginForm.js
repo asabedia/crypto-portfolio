@@ -2,8 +2,7 @@ import React, {Component} from "react";
 import {
     Form, Icon, Input, Button, Checkbox,
 } from 'antd';
-import {BrowserRouter as Router, Route, Link, withRouter, Redirect} from "react-router-dom";
-import UserForm from './userForm';
+import {Redirect} from "react-router-dom";
 
 class LoginForm extends Component {
     state= {
