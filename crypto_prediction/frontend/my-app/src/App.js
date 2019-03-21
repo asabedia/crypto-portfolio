@@ -12,10 +12,10 @@ class App extends Component {
         return (
             <Router>
                 <div className="App">
-                    <Dashboard/>
                     <Switch>
                         <Route exact path="/" component={LoginForm} />
                         <Route path="/home" component={withRouter(Dashboard)} />
+                        <Route path="/form" component={withRouter(UserForm)} />
                         <Route path="/register" component={withRouter(RegisterForm)} />
                     </Switch>
                 </div>

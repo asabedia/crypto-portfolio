@@ -1,45 +1,47 @@
 import React, {Component} from "react";
 import {
-    Card, Col, Row, Button,
+    Card, Col, Row, Button, Icon
 } from 'antd';
-import {BrowserRouter as Router, Route, Link, withRouter, Redirect} from "react-router-dom";
+import { Redirect} from "react-router-dom";
+import {Form} from "antd/lib/form";
 
 class Dashboard extends Component {
     state = {
-        login: false,
-        register: false
+        access: false
+    }
+    handleAccess = () => {
+        this.setState({access: true})
     };
 
     render() {
-        if (this.state.login === true) {
-            return <Redirect to='/home'/>
+        if (this.state.access === true) {
+            return <Redirect to='/form'/>
         }
-        if (this.state.register === true) {
-            return <Redirect to='/register'/>
+        let menuItems = [];
+        for (var i = 0; i < 3; i++) {
+            menuItems.push(
+                <Col span={8}>
+                    <Card title="Portfolio">
+                        <Row>
+                            <Button size="large" type="primary" onClick={() => this.handleAccess()}>
+                                Access
+                            </Button>
+                        </Row>
+                    </Card>
+                </Col>);
         }
-
         return (
             <div style={{margin: "5% 2% 0 2%"}}>
-                <Row gutter={16}>
-                    <Col span={8}>
-                        <Card title="Card title" bordered={false}>
-                            Portfolio 1
-                            <Button size="large" type="primary"
-                                    htmlType="submit">Submit</Button>
-                        </Card>
-                    </Col>
-                    <Col span={8}>
-                        <Card title="Card title" bordered={false}>
-                            Portfolio 3
-                            <Button size="large" type="primary"
-                                    htmlType="submit">Submit</Button>
-                        </Card>                    </Col>
-                    <Col span={8}>
-                        <Card title="Card title" bordered={false}>
-                            Portfolio 2
-                            <Button size="large" type="primary"
-                                    htmlType="submit">Submit</Button>
-                        </Card>                    </Col>
+                <Row gutter={16} style={{margin: "5% 2% 0 2%"}}>
+                    {menuItems}
+                </Row>
+                <Row gutter={16} style={{margin: "5% 2% 0 2%"}}>
+                    <Card title="Add a portfolio">
+                        <Button size="large" type="primary" onClick={() => this.handleAccess()}>
+                            <Icon type="plus-circle" style={{fontSize: '32px', color: 'white', align: 'center'}}/>
+                        </Button>
+
+                    </Card>
                 </Row>
             </div>
         );
