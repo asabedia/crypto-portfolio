@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'cryptodb',
         'USER' : 'postgres',
         'PASSWORD' : 'password',
-        'HOST' : 'localhost',
+        'HOST' : 'postgres',
         'PORT' : '5432'
     }
 }
