@@ -57,7 +57,7 @@ class LoginForm extends Component {
                         </Button>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" onClick={() => this.handleSubmit("register")} htmlType="submit" className="login-form-button">
+                        <Button type="primary" onClick={() => this.handleSubmit("register")} className="login-form-button">
                             Register Now!
                         </Button>
                     </Form.Item>
