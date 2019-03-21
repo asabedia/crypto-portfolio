@@ -9,6 +9,7 @@ class Dashboard extends Component {
         login: false,
         register: false
     };
+    
 
     render() {
         if (this.state.login === true) {

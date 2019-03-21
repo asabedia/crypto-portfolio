@@ -24,10 +24,6 @@ services:
     restart: always
     hostname: crypto
     container_name: crypto
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cryptodb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
   
 
   node:
