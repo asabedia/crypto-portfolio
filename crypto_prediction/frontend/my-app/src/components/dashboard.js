@@ -11,7 +11,6 @@ class Dashboard extends Component {
     };
 
     render() {
-        const {getFieldDecorator} = this.props.form;
         if (this.state.login === true) {
             return <Redirect to='/home'/>
         }
