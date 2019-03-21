@@ -25,4 +25,26 @@ class GeneratedPortfolioList(generics.ListAPIView):
         else: 
             return list()
 
+class GeneratedPortfolioList(generics.ListAPIView):
+    serializer_class = GeneratedPortfolioSerializer
+    def get_queryset(self):
+        username = self.kwargs['username']
+        print(username)
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        if username is not None:
+            return GeneratedPortfolio.objects.filter(associated_username=username, valid_until_date_time__gt=now)
+        else: 
+            return list()
+
+class ActiveGeneratedPortfolioList(generics.ListAPIView):
+    serializer_class = GeneratedPortfolioSerializer
+    def get_queryset(self):
+        username = self.kwargs['username']
+        print(username)
+        now = datetime.datetime.utcnow().replace(tzinfo=utc)
+        if username is not None:
+            return GeneratedPortfolio.objects.filter(associated_username=username, valid_until_date_time__gt=now)
+        else: 
+            return list()
+
 
