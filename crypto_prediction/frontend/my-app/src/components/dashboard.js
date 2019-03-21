@@ -12,6 +12,11 @@ class Dashboard extends Component {
     handleAccess = () => {
         this.setState({access: true})
     };
+    
+    componentDidMount() {
+        fetch("/api/user/")
+        .then(list => console.log(list))
+    }
 
     render() {
         if (this.state.access === true) {
