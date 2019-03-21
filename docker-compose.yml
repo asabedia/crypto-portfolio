@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: ./crypto_prediction/frontend/Dockerfile
+    volumes:
+      - '.:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+  
+  server: 
+    container_name: server
+    build: 
+      context: .
