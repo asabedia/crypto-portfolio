@@ -25,7 +25,6 @@ services:
     hostname: crypto
     container_name: crypto
   
-
   node:
     build: ./crypto_prediction/frontend
     command: ["npm", "start"]
