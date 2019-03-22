@@ -14,8 +14,10 @@ class Dashboard extends Component {
     };
     
     componentDidMount() {
-        fetch("/api/user/")
-        .then(list => console.log(list))
+        fetch("api/user/")
+        .then(results => results.json())
+        .then(data => console.log(data))
+        //load into state by inside the 'then' claus
     }
 
     render() {
