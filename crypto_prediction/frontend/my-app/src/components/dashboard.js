@@ -7,40 +7,55 @@ import {Form} from "antd/lib/form";
 
 class Dashboard extends Component {
     state = {
-        access: false
+        access: false,
+        portfolios: [],
+        logged_in_user: ""
     }
     handleAccess = () => {
         this.setState({access: true})
     };
     
     componentDidMount() {
-        fetch("api/user/")
-        .then(results => results.json())
-        .then(data => console.log(data))
-        //load into state by inside the 'then' claus
+        let {username} = ""
+        if(this.props.location.state != null){
+            username = this.props.location.state.username
+            this.setState({logged_in_user: this.props.location.state})
+            console.log(this.state.logged_in_user)
+        }
+        if(username == "" && this.state.logged_in_user != ""){
+            username = this.state.logged_in_user
+        }
+        if(username != "") {
+            fetch("api/portfolio/" + username + "/")
+            .then(results => results.json())
+            .then(data => {
+                let portfolios = data.map((portfolio) => {
+                    console.log(portfolio.name)
+                    return(
+                        <Col span={8} key = {portfolio.id}>
+                            <Card title= {portfolio.name}>
+                                <Row>
+                                    <Button size="large" type="primary" onClick={() => this.handleAccess()}>
+                                        Access
+                                    </Button>
+                                </Row>
+                            </Card>
+                        </Col>
+                    )
+                })
+                this.setState({portfolios: portfolios});
+            })
+        }
     }
 
     render() {
         if (this.state.access === true) {
             return <Redirect to='/form'/>
         }
-        let menuItems = [];
-        for (var i = 0; i < 3; i++) {
-            menuItems.push(
-                <Col span={8}>
-                    <Card title="Portfolio">
-                        <Row>
-                            <Button size="large" type="primary" onClick={() => this.handleAccess()}>
-                                Access
-                            </Button>
-                        </Row>
-                    </Card>
-                </Col>);
-        }
         return (
             <div style={{margin: "5% 2% 0 2%"}}>
                 <Row gutter={16} style={{margin: "5% 2% 0 2%"}}>
-                    {menuItems}
+                    {this.state.portfolios}
                 </Row>
                 <Row gutter={16} style={{margin: "5% 2% 0 2%"}}>
                     <Card title="Add a portfolio">

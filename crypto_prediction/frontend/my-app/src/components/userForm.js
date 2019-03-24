@@ -4,6 +4,7 @@ import {
     Form, Input, Row, Col, Select, Button
 } from 'antd';
 import {Redirect} from "react-router-dom";
+import { relativeTimeRounding } from "moment";
 
 const Option = Select.Option;
 
@@ -16,6 +17,7 @@ class UserForm extends Component {
         back: false,
         next: false
     };
+
     handleSubmit = (option) => {
         if (option === 'back') {
             this.setState({back: true})
@@ -30,12 +32,14 @@ class UserForm extends Component {
                 }
             });
         }
-
     };
 
     render() {
         if (this.state.back === true) {
-            return <Redirect to='/home'/>
+            return <Redirect to={{
+                pathname: '/home', 
+                state: {username: "Soluta ipsum blanditiis dolorem"}
+            }}/>
         }
         const {getFieldDecorator} = this.props.form;
         let predictedColumn;
