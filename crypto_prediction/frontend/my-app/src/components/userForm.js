@@ -53,7 +53,7 @@ const styles = theme => ({
 class UserForm extends Component {
     state = {
         back: false,
-        current_state: 2,
+        current_state: 1,
         coin_options: [],
         portfolio: {
             name: "",
@@ -65,8 +65,17 @@ class UserForm extends Component {
             amount_purchased: "",
             max_amount: ""
         },
+        generated_portfolio_name: "",
         tomorrows_predicted_prices: []
     };
+
+    validatePortfolioItem = (item) => {
+        return true
+    }
+
+    validatePortfolioName = (name) => {
+        return true
+    }
 
     componentDidMount() {
         fetch("api/coin/")
@@ -88,7 +97,21 @@ class UserForm extends Component {
     }
 
     handleNextState = (nextState) => {
-        if (nextState === 3) {
+        if (nextState === 2) {
+            const portfolio_name = this.state.portfolio.name
+            if (!this.validatePortfolioName(portfolio_name)) {
+                return;
+            }
+            fetch("api/coin/")
+            .then(response => response.json())
+            .then(data => {
+                let coins_options = data.map(coin => {
+                    return(coin.name)
+                })
+                this.setState({coin_options: coins_options, portfolio: {name: portfolio_name, items: []}, current_state: nextState})
+            })
+
+        } else if (nextState === 3) {
             const predictions = this.getPredictedPricesFor(this.state.portfolio.items.map(item => item.coin))
             this.setState((prevState) => (
                 {
@@ -161,11 +184,9 @@ class UserForm extends Component {
                         max_amount: value
                     }
                 })
+        } else if (type == "generated-portfolio-name") {
+            this.setState({generated_portfolio_name: value})
         } 
-    }
-
-    validatePortfolioItem = (item) => {
-        return true
     }
 
     handleSubmit = (type) => {
@@ -187,6 +208,8 @@ class UserForm extends Component {
                         }
                 }))
             }
+        } else if (type === 'generate-portfolio') {
+            console.log(this.state.tomorrows_predicted_prices)
         }
     };
 
@@ -211,121 +234,133 @@ class UserForm extends Component {
                 <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleNextState(this.state.current_state + 1)}>Next</Button>
         } else if (this.state.current_state === 2) {
             content = 
-            <div>
-                <form className = {classes.container}>
-                    <TextField
-                        name="select-coin"
-                        required
-                        label="Select"
-                        select
-                        className={classes.textField}
-                        value={this.state.current_portfolio_item.coin}
-                        onChange={this.handleChange}
-                        SelectProps={{
-                            MenuProps: {
-                            className: classes.menu,
-                            },
-                        }}
-                        helperText="Please select your currency"
-                        margin="normal">
-                        {this.state.coin_options.map(option => (
-                            <MenuItem key={option} value={option}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                    <TextField
-                            id="price-purchased"
-                            label="Price Purchased"
+                <div>
+                    <form className = {classes.container}>
+                        <TextField
+                            name="select-coin"
                             required
+                            label="Select"
+                            select
                             className={classes.textField}
-                            value = {this.state.current_portfolio_item.price_purchased}
-                            placeholder="50.50"
+                            value={this.state.current_portfolio_item.coin}
+                            onChange={this.handleChange}
+                            SelectProps={{
+                                MenuProps: {
+                                className: classes.menu,
+                                },
+                            }}
+                            helperText="Please select your currency"
+                            margin="normal">
+                            {this.state.coin_options.map(option => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <TextField
+                                id="price-purchased"
+                                label="Price Purchased"
+                                required
+                                className={classes.textField}
+                                value = {this.state.current_portfolio_item.price_purchased}
+                                placeholder="50.50"
+                                onChange={this.handleChange}
+                                margin="normal"
+                            />
+                        <TextField
+                            id="amount-purchased"
+                            label="Amount Purchased"
+                            required
+                            value = {this.state.current_portfolio_item.amount_purchased}
+                            className={classes.textField}
+                            placeholder="105.402"
                             onChange={this.handleChange}
                             margin="normal"
                         />
-                    <TextField
-                        id="amount-purchased"
-                        label="Amount Purchased"
-                        required
-                        value = {this.state.current_portfolio_item.amount_purchased}
-                        className={classes.textField}
-                        placeholder="105.402"
-                        onChange={this.handleChange}
-                        margin="normal"
-                    />
-                    <TextField
-                        id="maximum-amount"
-                        label="Maximum Amount To Purchase"
-                        required
-                        helperText = "Please enter the amount of coins"
-                        value = {this.state.current_portfolio_item.max_amount}
-                        className={classes.textField}
-                        placeholder="1000.521"
-                        onChange={this.handleChange}
-                        margin="normal"
-                    />
-                    <Button variant="contained" color="secondary"  className={classes.button} onClick={() => this.handleSubmit("submit-portfolio-items")}>Save</Button>
-                </form>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="right">Coins</TableCell>
-                            <TableCell align="right">Price Purchased</TableCell>
-                            <TableCell align="right">Amount</TableCell>
-                            <TableCell align="right">Maximum Amount</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.state.portfolio.items.map(item => {
-                            return(
-                                <TableRow key = {item.coin} >
-                                    <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
-                                    <TableCell align="right">{item.price_purchased}</TableCell>
-                                    <TableCell align="right">{item.amount_purchased}</TableCell>
-                                    <TableCell align="right">{item.max_amount}</TableCell>
-                                </TableRow>)
-                        })}
-                    </TableBody>    
-                </Table>
-            </div>
+                        <TextField
+                            id="maximum-amount"
+                            label="Maximum Amount To Purchase"
+                            required
+                            helperText = "Please enter the amount of coins"
+                            value = {this.state.current_portfolio_item.max_amount}
+                            className={classes.textField}
+                            placeholder="1000.521"
+                            onChange={this.handleChange}
+                            margin="normal"
+                        />
+                        <Button variant="contained" color="secondary"  className={classes.button} onClick={() => this.handleSubmit("submit-portfolio-items")}>Save</Button>
+                    </form>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="right">Coins</TableCell>
+                                <TableCell align="right">Price Purchased</TableCell>
+                                <TableCell align="right">Amount</TableCell>
+                                <TableCell align="right">Maximum Amount</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.state.portfolio.items.map(item => {
+                                return(
+                                    <TableRow key = {item.coin} >
+                                        <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
+                                        <TableCell align="right">{item.price_purchased}</TableCell>
+                                        <TableCell align="right">{item.amount_purchased}</TableCell>
+                                        <TableCell align="right">{item.max_amount}</TableCell>
+                                    </TableRow>)
+                            })}
+                        </TableBody>    
+                    </Table>
+                </div>
 
             rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleNextState(this.state.current_state + 1)}>Next</Button>
         } else if (this.state.current_state === 3) {
             content = 
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell align="right">Coin</TableCell>
-                            <TableCell align="right">Predicted Price</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.state.tomorrows_predicted_prices.map(item => {
-                            return(
-                                <TableRow key = {item.coin} >
-                                    <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
-                                    <TableCell component="th" scope="row" align="right">
-                                        <TextField
-                                            id= "predicted-price"
-                                            label="Predicted Price"
-                                            helperText="You may alter the predicted price"
-                                            className={classes.textField}
-                                            value= {item.price}
-                                            onChange={(event) => this.handlePricePredictionChange(
-                                                    {
-                                                        coin: item.coin,
-                                                        new_price: event.target.value
-                                                    }
-                                                )}
-                                            margin="normal"
-                                        />
-                                    </TableCell>
-                                </TableRow>)
-                        })}
-                    </TableBody>    
-                </Table>
+                <div>
+                    <TextField
+                        id="generated-portfolio-name"
+                        label="Generated Portfolio Name"
+                        required
+                        className={classes.textField}
+                        value= {this.state.generated_portfolio_name}
+                        onChange={this.handleChange}
+                        margin="normal"
+                    />
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="right">Coin</TableCell>
+                                <TableCell align="right">Predicted Price</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {this.state.tomorrows_predicted_prices.map(item => {
+                                return(
+                                    <TableRow key = {item.coin} >
+                                        <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
+                                        <TableCell component="th" scope="row" align="right">
+                                            <TextField
+                                                id= "predicted-price"
+                                                label="Predicted Price"
+                                                helperText="You may alter the predicted price"
+                                                className={classes.textField}
+                                                value= {item.price}
+                                                onChange={(event) => this.handlePricePredictionChange(
+                                                        {
+                                                            coin: item.coin,
+                                                            new_price: event.target.value
+                                                        }
+                                                    )}
+                                                margin="normal"
+                                            />
+                                        </TableCell>
+                                    </TableRow>)
+                            })}
+                        </TableBody>    
+                    </Table>
+                </div>
                 
+                rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("generate-portfolio")}>Generate Profile</Button>
         }
         
         else if (this.state.back === true) {
@@ -349,8 +384,6 @@ class UserForm extends Component {
                     </Col>
                 </Row>
             </div>
-            
-            
         );
     }
 }
