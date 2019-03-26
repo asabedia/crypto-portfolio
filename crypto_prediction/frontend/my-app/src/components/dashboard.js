@@ -7,14 +7,20 @@ import {Form} from "antd/lib/form";
 
 class Dashboard extends Component {
     state = {
-        access: false,
+        access: {flag: false, portfolio_id: ""},
+        new_portfolio: false,
         portfolios: [],
         logged_in_user: ""
     }
-    handleAccess = () => {
-        this.setState({access: true})
+
+    handleAccess = (portfolio_id) => {
+        this.setState({access: {flag: true, portfolio_id: portfolio_id}})
     };
     
+    handleNewPortfolio = () => {
+        this.setState({new_portfolio: true})
+    }
+
     componentDidMount() {
         let {username} = ""
         if(this.props.location.state != null){
@@ -27,7 +33,14 @@ class Dashboard extends Component {
         }
         if(username != "") {
             fetch("api/portfolio/" + username + "/")
-            .then(results => results.json())
+            .then(results => {
+                results = []
+                try {
+                    results = results.json()
+                }
+                catch(err) {}
+                return results
+            })
             .then(data => {
                 let portfolios = data.map((portfolio) => {
                     console.log(portfolio.name)
@@ -35,7 +48,7 @@ class Dashboard extends Component {
                         <Col span={8} key = {portfolio.id}>
                             <Card title= {portfolio.name}>
                                 <Row>
-                                    <Button size="large" type="primary" onClick={() => this.handleAccess()}>
+                                    <Button size="large" type="primary" onClick={() => this.handleAccess(portfolio.id)}>
                                         Access
                                     </Button>
                                 </Row>
@@ -49,8 +62,11 @@ class Dashboard extends Component {
     }
 
     render() {
-        if (this.state.access === true) {
-            return <Redirect to='/form'/>
+        if (this.state.access.flag === true) {
+            return <Redirect to= {{pathname: '/add_portfolio', state: {portfolio_id: this.state.access.portfolio_id}}}/>
+        }
+        if (this.state.new_portfolio === true) {
+            return <Redirect to= {{pathname: '/form', state: {username: this.state.logged_in_user}}}/>
         }
         return (
             <div style={{margin: "5% 2% 0 2%"}}>
@@ -59,10 +75,9 @@ class Dashboard extends Component {
                 </Row>
                 <Row gutter={16} style={{margin: "5% 2% 0 2%"}}>
                     <Card title="Add a portfolio">
-                        <Button size="large" type="primary" onClick={() => this.handleAccess()}>
+                        <Button size="large" type="primary" onClick={() => this.handleNewPortfolio()}>
                             <Icon type="plus-circle" style={{fontSize: '32px', color: 'white', align: 'center'}}/>
                         </Button>
-
                     </Card>
                 </Row>
             </div>
