@@ -4,6 +4,11 @@ from django.utils.timezone import utc
 from price_prediction.models import User, Coin, GeneratedPortfolio, Coin_in_Generated_Portfolio, Coin_in_User_Portfolio
 from price_prediction.serializer import UserSerializer, CoinSerializer, GeneratedPortfolioSerializer, CoinInGeneratedPortfolioSerializer, CoinInUserPortfolioSerializer
 from rest_framework import generics
+from django.views import View
+import json
+from .rnn_model import predict
+from .LP_test import get_optimal_quantities
+from django.http import HttpResponse
 
 # Create your views here.
 class UserList(generics.ListAPIView):
@@ -68,3 +73,28 @@ class CreateCoinsInGeneratedPortoflio(generics.CreateAPIView):
 class CreateCoinsInUserPortoflio(generics.CreateAPIView):
     serializer_class = CoinInUserPortfolioSerializer
 
+class GetCoinPrediciton (generics.CreateAPIView):
+    def post(self, request, *args, **kwargs):
+        coins = json.loads(request.body)
+        predictions = {}
+        for coin in coins:
+            predictions[coin] = predict(coin)
+        return HttpResponse(json.dumps(predictions))
+
+class GetGeneratedPortfolio (generics.CreateAPIView):
+    def post(self, request, *args, **kwargs):
+        req = json.loads(request.body)
+        username = req['username']
+        B = User.objects.values_list('budget', flat = True).get(username=username)
+        p = { i['coin'] : float(i['price']) for i in req['tomorrows_predicted_prices']}
+
+        x = []
+        c = {}
+        f = {}
+        for i in req['current_portfolio']['items']:
+            x.append(i['coin'])
+            c[i['coin']] = float(i['price_purchased'])
+            f[i['coin']] = float(i['max_amount'])
+        
+        print(get_optimal_quantities(x, c, p, B, f))
+        return HttpResponse(json.dumps(req))

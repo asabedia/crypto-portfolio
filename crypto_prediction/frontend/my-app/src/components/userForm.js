@@ -55,6 +55,7 @@ class UserForm extends Component {
         back: false,
         current_state: 1,
         coin_options: [],
+        username: "",
         portfolio: {
             name: "",
             items: []
@@ -78,14 +79,7 @@ class UserForm extends Component {
     }
 
     componentDidMount() {
-        fetch("api/coin/")
-        .then(response => response.json())
-        .then(data => {
-            let coins_options = data.map(coin => {
-                return(coin.name)
-            })
-            this.setState({coin_options: coins_options})
-        })
+        this.setState({username: this.props.location.state.username.username})
     }
 
     getPredictedPricesFor = (coins) => {
@@ -108,7 +102,14 @@ class UserForm extends Component {
                 let coins_options = data.map(coin => {
                     return(coin.name)
                 })
-                this.setState({coin_options: coins_options, portfolio: {name: portfolio_name, items: []}, current_state: nextState})
+                this.setState({
+                    coin_options: coins_options,
+                    portfolio: {
+                        name: portfolio_name, 
+                        items: []
+                    },
+                     current_state: nextState
+                    })
             })
 
         } else if (nextState === 3) {
@@ -132,7 +133,6 @@ class UserForm extends Component {
             }
         }
         this.setState({tomorrows_predicted_prices: b})
-
     }
 
     handleChange = (event) => {
@@ -190,7 +190,6 @@ class UserForm extends Component {
     }
 
     handleSubmit = (type) => {
-        console.log(type)
         if (type === 'back') {
             this.setState({back: true})
         }
@@ -209,7 +208,17 @@ class UserForm extends Component {
                 }))
             }
         } else if (type === 'generate-portfolio') {
-            console.log(this.state.tomorrows_predicted_prices)
+            const lp = 
+            {
+                username: this.state.username,
+                current_portfolio: this.state.portfolio,
+                tomorrows_predicted_prices: this.state.tomorrows_predicted_prices
+            }
+            fetch('/api/generated_portfolio/', {
+                method: 'post',
+                body: JSON.stringify(lp)
+              }).then(response => response.json())
+              .then(data => console.log(data))
         }
     };
 
