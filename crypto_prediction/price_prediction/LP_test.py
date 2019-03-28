@@ -8,11 +8,10 @@ random.seed(a=10)
 # p = {(i): 10*i + random.randint(1,7) for i in range(1,11)} #predicted price
 # B = 1000 # budget
 # f = {(i): random.randint(1,10) for i in range(1,11)} # fraction
-def get_optimal_quantities(y: {'coin name' : 'amount_held'},x : ['coin names'], c : {'coin name' : 'cost'}, p : {'coin name' : 'current price'}, B : 'Int: budget', f : {'coin name': 'max fraction in portfolio'}) -> {'coin name': 'quantity'}:
+def get_optimal_quantities(y: {'coin name' : 'amount_held'}, x: ['coin names'], c: {'coin name' : 'cost'}, p : {'coin name' : 'current price'}, B : 'Int: budget', f : {'coin name': 'max fraction in portfolio'}) -> {'coin name': 'quantity'}:
     
     problem = plp.LpProblem("Crypto-currency porfolio", sense=plp.LpMaximize)
     x = {(i):plp.LpVariable(cat=plp.LpContinuous, name="x{0}".format(i)) for i in x}
-
 
     problem += plp.LpConstraint(
                  e=plp.lpSum(x[i] * p[i] for i in x),
@@ -37,7 +36,7 @@ def get_optimal_quantities(y: {'coin name' : 'amount_held'},x : ['coin names'], 
     print(plp.LpStatus[problem.status])
     # opt_df = pd.DataFrame.from_dict(x, orient="index", columns = ["variable_object"])
     # opt_df["solution_value"] = opt_df["variable_object"].apply(lambda item: item.varValue)
-    results = {i:x[i].varValue for i in x}
+    results = {i: x[i].varValue for i in x}
     
     return results
 

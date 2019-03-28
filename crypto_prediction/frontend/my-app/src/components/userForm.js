@@ -62,7 +62,6 @@ class UserForm extends Component {
         },
         current_portfolio_item: {
             coin: "",
-            price_purchased: "",
             amount_purchased: "",
             max_amount: ""
         },
@@ -150,16 +149,6 @@ class UserForm extends Component {
                     current_portfolio_item: {
                         coin: value,
                         price_purchased: this.state.current_portfolio_item.price_purchased,
-                        amount_purchased: this.state.current_portfolio_item.amount_purchased,
-                        max_amount: this.state.current_portfolio_item.max_amount
-                    }
-                })
-        } else if (type == "price-purchased") {
-            this.setState(
-                {
-                    current_portfolio_item: {
-                        coin: this.state.current_portfolio_item.coin,
-                        price_purchased: value,
                         amount_purchased: this.state.current_portfolio_item.amount_purchased,
                         max_amount: this.state.current_portfolio_item.max_amount
                     }
@@ -267,16 +256,6 @@ class UserForm extends Component {
                             ))}
                         </TextField>
                         <TextField
-                                id="price-purchased"
-                                label="Price Purchased"
-                                required
-                                className={classes.textField}
-                                value = {this.state.current_portfolio_item.price_purchased}
-                                placeholder="50.50"
-                                onChange={this.handleChange}
-                                margin="normal"
-                            />
-                        <TextField
                             id="amount-purchased"
                             label="Amount Purchased"
                             required
@@ -303,7 +282,6 @@ class UserForm extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell align="right">Coins</TableCell>
-                                <TableCell align="right">Price Purchased</TableCell>
                                 <TableCell align="right">Amount</TableCell>
                                 <TableCell align="right">Maximum Amount</TableCell>
                             </TableRow>
@@ -313,7 +291,6 @@ class UserForm extends Component {
                                 return(
                                     <TableRow key = {item.coin} >
                                         <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
-                                        <TableCell align="right">{item.price_purchased}</TableCell>
                                         <TableCell align="right">{item.amount_purchased}</TableCell>
                                         <TableCell align="right">{item.max_amount}</TableCell>
                                     </TableRow>)
@@ -326,15 +303,6 @@ class UserForm extends Component {
         } else if (this.state.current_state === 3) {
             content = 
                 <div>
-                    <TextField
-                        id="generated-portfolio-name"
-                        label="Generated Portfolio Name"
-                        required
-                        className={classes.textField}
-                        value= {this.state.generated_portfolio_name}
-                        onChange={this.handleChange}
-                        margin="normal"
-                    />
                     <Table>
                         <TableHead>
                             <TableRow>
