@@ -9,16 +9,16 @@ class LoginForm extends Component {
         login: false,
         register: false
     };
-    handleSubmit = (state) => {
+    handleSubmit = (option) => {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', values);
             }
         });
-        if (state === "register") {
+        if (option === "register") {
             this.setState({register: true})
         }
-        else if (state === "login") {
+        else if (option === "login") {
             this.setState({login: true})
         }
     };
@@ -26,7 +26,10 @@ class LoginForm extends Component {
     render() {
         const {getFieldDecorator} = this.props.form;
         if (this.state.login === true) {
-            return <Redirect to='/home' />
+            return <Redirect to={{
+                pathname: '/home',
+                state: {username: "Dolorem officiis nemo impedit eligendi ullam"}
+            }} />
         }
         if (this.state.register === true) {
             return <Redirect to='/register' />
