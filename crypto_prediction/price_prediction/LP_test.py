@@ -4,11 +4,11 @@ import sys
 import pandas as pd
 
 random.seed(a=10)
-c = {(i): 10*i for i in range(1,11)} #original purchase price
-p = {(i): 10*i + random.randint(1,7) for i in range(1,11)} #predicted price
-B = 1000 # budget
-f = {(i): random.randint(1,10) for i in range(1,11)} # fraction
-def get_optimal_quantities(x : ['coin names'], c : {'coin name' : 'cost'}, p : {'coin name' : 'current price'}, B : 'Int: budget', f : {'coin name': 'max fraction in portfolio'}) -> {'coin name': 'quantity'}:
+# c = {(i): 10*i for i in range(1,11)} #original purchase price
+# p = {(i): 10*i + random.randint(1,7) for i in range(1,11)} #predicted price
+# B = 1000 # budget
+# f = {(i): random.randint(1,10) for i in range(1,11)} # fraction
+def get_optimal_quantities(y: {'coin name' : 'amount_held'},x : ['coin names'], c : {'coin name' : 'cost'}, p : {'coin name' : 'current price'}, B : 'Int: budget', f : {'coin name': 'max fraction in portfolio'}) -> {'coin name': 'quantity'}:
     
     problem = plp.LpProblem("Crypto-currency porfolio", sense=plp.LpMaximize)
     x = {(i):plp.LpVariable(cat=plp.LpContinuous, name="x{0}".format(i)) for i in x}
@@ -28,8 +28,8 @@ def get_optimal_quantities(x : ['coin names'], c : {'coin name' : 'cost'}, p : {
         problem += plp.LpConstraint(
                     e=x[i],
                     sense=plp.LpConstraintGE,
-                    rhs=0,
-                    name="positivity{0}".format(i))
+                    rhs=-y[i],
+                    name="amount_constraint{0}".format(i))
 
     objective = plp.lpSum(x[i] * (p[i]-c[i]) for i in x)
     problem.setObjective(objective)

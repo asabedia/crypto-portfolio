@@ -56,7 +56,7 @@ def download_test_crypto (coin):
     dataframe = dataframe.drop("Volume",axis=1)
     return dataframe
 
-def create_outputs(data, coin, window=window):
+def create_outputs(data, window=window):
 #   Function produces the percentage change over a certain window 
     return (data['Close'][window:].values / data['Close'][:-window].values) - 1
 
