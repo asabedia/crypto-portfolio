@@ -178,15 +178,6 @@ class UserForm extends Component {
                         max_amount: this.state.current_portfolio_item.max_amount
                     }
                 })
-        } else if (type == "price-purchased") {
-            this.setState(
-                {
-                    current_portfolio_item: {
-                        coin: this.state.current_portfolio_item.coin,
-                        amount_purchased: this.state.current_portfolio_item.amount_purchased,
-                        max_amount: this.state.current_portfolio_item.max_amount
-                    }
-                })
         } else if (type == "amount-purchased") {
             this.setState(
                 {

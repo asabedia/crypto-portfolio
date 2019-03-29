@@ -1,0 +1,30 @@
+[
+    {
+        "model": "price_prediction.Coin",
+        "pk": 1,
+        "fields": {
+          "name": "bitcoin"
+        }
+    },
+    {
+        "model": "price_prediction.Coin",
+        "pk": 2,
+        "fields": {
+          "name": "ethereum"
+        }
+    },
+    {
+        "model": "price_prediction.Coin",
+        "pk": 3,
+        "fields": {
+          "name": "dash"
+        }
+    },
+    {
+        "model": "price_prediction.Coin",
+        "pk": 4,
+        "fields": {
+          "name": "monero"
+        }
+    }
+]

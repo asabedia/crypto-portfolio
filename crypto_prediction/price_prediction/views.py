@@ -86,13 +86,17 @@ class GetGeneratedPortfolio (generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         req = json.loads(request.body)
         B = User.objects.values_list('budget', flat = True).get(username=username)
+
         p = { i['coin'] : float(i['price']) for i in req['tomorrows_predicted_prices'] }
+
         x = []
-        c = {}
+        c = {} # cost of the coin today
         f = {}
+        y = {}
         for i in req['current_portfolio']['items']:
             x.append(i['coin'])
             f[i['coin']] = float(i['max_amount'])
-        coin_suggestions = { i : 10 for i in x }
-        # print(get_optimal_quantities(x, c, p, B, f))
-        return HttpResponse(json.dumps(coin_suggestions))
+            y[i['coin']] = float(i['amount_purchased'])
+        
+        print(get_optimal_quantities(y, x, c, p, B, f))
+        return HttpResponse(json.dumps(req))
