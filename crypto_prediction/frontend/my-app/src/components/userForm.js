@@ -10,6 +10,7 @@ import { Paper, Button, TextField,
     TableBody, TableCell, TableHead,
     TableRow, Modal } from "@material-ui/core";
 import portfolio from "./portfolio";
+import { object } from "prop-types";
 
 const Option = Select.Option;
 
@@ -65,7 +66,7 @@ const styles = theme => ({
   });
 
 /*
-    item = {coin, price_purchased, amount_purchased, max_amount}
+    item = {coin, amount_purchased, max_amount}
     tomorrows_predicted_prices = {coin:  ,price:}
 */ 
 
@@ -220,6 +221,7 @@ class UserForm extends Component {
         } else if (type === 'generate-portfolio') {
             const lp = 
             {
+                username: this.state.username,
                 current_portfolio: this.state.portfolio,
                 predicted_price: this.state.predicted_price
             }
@@ -228,9 +230,57 @@ class UserForm extends Component {
                 body: JSON.stringify(lp)
               }).then(response => response.json())
               .then(data => {
-                  console.log(data)
-                  this.setState({suggestions: data, open_suggestion_modal: true})
+                console.log(data)                    
+                this.setState(
+                {
+                    suggestions: data,
+                    open_suggestion_modal: true
                 })
+            })
+        } else if (type == "save-generate-portfolio") {
+            const current_portfolio = this.state.portfolio
+            const suggestions = this.state.suggestions
+            const items = current_portfolio.items.map(item => {
+                const amount_purchased = parseFloat(item.amount_purchased) + parseFloat(suggestions[item.coin])
+                return({
+                    coin: item.coin, 
+                    amount_purchased: amount_purchased,
+                    max_amount: item.max_amount
+                })}) 
+            const generated_portofio = {
+                name: current_portfolio.name,
+                associated_username: this.state.username,
+                items: items
+            }
+            fetch('/api/generated_portfolio/new/', {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify(
+                    {
+                        name: generated_portofio.name,
+                        associated_username: generated_portofio.associated_username
+                    })
+              }).then(response => response.json())
+              .then(data => {
+                const portfolio_id = data.id   
+                fetch('/api/coin/generated_portfolio/', {
+                    method: 'post',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }, 
+                    body: JSON.stringify((
+                        {
+                            portfolio_id: portfolio_id,
+                            items:generated_portofio.items
+                        })
+                )})
+                console.log(portfolio_id)                
+            })
+            console.log(generated_portofio)
         }
     };
 
@@ -371,6 +421,16 @@ class UserForm extends Component {
                                         <TableCell align="right">Amount</TableCell>
                                     </TableRow>
                                 </TableHead>
+                                <TableBody>
+                                    {Object.entries(this.state.suggestions).map(entry => {
+                                        return(
+                                            <TableRow key = {entry[0]} >
+                                                <TableCell component="th" scope="row" align="center">{entry[0]}</TableCell>
+                                                <TableCell component="th" scope="row" align="center">{entry[1] < 0 ? "Sell" : "Buy"}</TableCell>
+                                                <TableCell component="th" scope="row" align="center">{Math.abs(entry[1])}</TableCell>
+                                            </TableRow>)
+                                    })}
+                                </TableBody>
                             </Table>
                             <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("save-generate-portfolio")}>Save</Button>
                         </div>    

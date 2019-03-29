@@ -32,16 +32,10 @@ class Dashboard extends Component {
             username = this.state.logged_in_user
         }
         if(username != "") {
-            fetch("api/portfolio/" + username + "/")
-            .then(results => {
-                results = []
-                try {
-                    results = results.json()
-                }
-                catch(err) {}
-                return results
-            })
+            fetch("api/generated_portfolio/" + username + "/")
+            .then(results => results.json())
             .then(data => {
+                console.log(data)
                 let portfolios = data.map((portfolio) => {
                     console.log(portfolio.name)
                     return(

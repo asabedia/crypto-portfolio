@@ -7,8 +7,10 @@ from rest_framework import generics
 from django.views import View
 import json
 from .rnn_model import predict
+from .crypto_prices import get_todays_prices
 from .LP_test import get_optimal_quantities
 from django.http import HttpResponse
+
 
 # Create your views here.
 class UserList(generics.ListAPIView):
@@ -68,7 +70,17 @@ class CreateGeneratedPortfolio(generics.CreateAPIView):
     serializer_class = GeneratedPortfolioSerializer
 
 class CreateCoinsInGeneratedPortoflio(generics.CreateAPIView):
-    serializer_class = CoinInGeneratedPortfolioSerializer
+    def post(self, request, *args, **kwargs):
+        req = json.loads(request.body)
+        portfolio_id = req['portfolio_id']
+        items = req['items']
+        print(req)
+        gport =  GeneratedPortfolio.objects.filter(pk=portfolio_id)
+        for item in items:
+            coin = Coin.objects.filter(pk=item['coin'])
+            Coin_in_Generated_Portfolio(portfolio_id=gport[0], coin_id = coin[0], amount_purchased=item['amount_purchased'] ).save()
+        return HttpResponse(json.dumps(req))
+
 
 class CreateCoinsInUserPortoflio(generics.CreateAPIView):
     serializer_class = CoinInUserPortfolioSerializer
@@ -85,18 +97,25 @@ class GetCoinPrediciton (generics.CreateAPIView):
 class GetGeneratedPortfolio (generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         req = json.loads(request.body)
+        username = req['username']
         B = User.objects.values_list('budget', flat = True).get(username=username)
 
-        p = { i['coin'] : float(i['price']) for i in req['tomorrows_predicted_prices'] }
+        p = { i['coin'] : float(i['price']) for i in req['predicted_price'] }
 
         x = []
-        c = {} # cost of the coin today
         f = {}
         y = {}
         for i in req['current_portfolio']['items']:
             x.append(i['coin'])
             f[i['coin']] = float(i['max_amount'])
             y[i['coin']] = float(i['amount_purchased'])
-        
-        print(get_optimal_quantities(y, x, c, p, B, f))
-        return HttpResponse(json.dumps(req))
+        c = get_todays_prices(x) # cost of the coin today        
+        print(x)
+        print(c)
+        print(p)
+        print(y)
+        print(f)
+
+        solution = get_optimal_quantities(y, x, c, p, B, f)
+        print(solution)
+        return HttpResponse(json.dumps(solution))
