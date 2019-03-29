@@ -8,7 +8,7 @@ import { relativeTimeRounding } from "moment";
 import { Paper, Button, TextField, 
     withStyles, Table, MenuItem, 
     TableBody, TableCell, TableHead,
-    TableRow } from "@material-ui/core";
+    TableRow, Modal } from "@material-ui/core";
 import portfolio from "./portfolio";
 
 const Option = Select.Option;
@@ -17,13 +17,32 @@ const states = {
     1: "Portfolio Name", 
     2: "Porfolio Details",
     3: "Coin Price Predictions",
-    4: "Saved"
+    4: "Confirmation"
 }
+
+function getModalStyle() {
+    const top = 50;
+    const left = 50;
+  
+    return {
+      top: `${top}%`,
+      left: `${left}%`,
+      transform: `translate(-${top}%, -${left}%)`,
+    };
+  }
 
 const styles = theme => ({
     container: {
       display: 'flex',
       flexWrap: 'wrap',
+    },
+    paper: {
+        position: 'absolute',
+        width: theme.spacing.unit * 50,
+        backgroundColor: theme.palette.background.paper,
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing.unit * 4,
+        outline: 'none',
     },
     button: {
         margin: theme.spacing.unit,
@@ -62,12 +81,12 @@ class UserForm extends Component {
         },
         current_portfolio_item: {
             coin: "",
-            price_purchased: "",
             amount_purchased: "",
             max_amount: ""
         },
-        generated_portfolio_name: "",
-        tomorrows_predicted_prices: []
+        predicted_price: [],
+        suggestions: [],
+        open_suggestion_modal: false
     };
 
     validatePortfolioItem = (item) => {
@@ -88,6 +107,10 @@ class UserForm extends Component {
             tomorrows_predicted_prices.push({coin: coins[c], price: 5})
         }
         return tomorrows_predicted_prices;
+    }
+
+    handleClose = (event) => {
+        this.setState({open_suggestion_modal: false})
     }
 
     handleNextState = (nextState) => {
@@ -113,18 +136,20 @@ class UserForm extends Component {
             })
 
         } else if (nextState === 3) {
-            const predictions = this.getPredictedPricesFor(this.state.portfolio.items.map(item => item.coin))
-            this.setState((prevState) => (
-                {
-                    portfolio: prevState.portfolio,
-                    current_state: nextState,
-                    tomorrows_predicted_prices: predictions
-                }))
+            const coin_list = this.state.portfolio.items.map(item => item.coin)
+            fetch('api/coin/predict/', {
+                method: 'post',
+                body: JSON.stringify(coin_list)
+              }).then(response => response.json())
+              .then(data => {
+                  const items = Object.keys(data).map(coin => ({coin: coin, price: data[coin]}))
+                  this.setState({predicted_price: items, current_state: nextState})
+                })
         }
     }
 
     handlePricePredictionChange = (prediction_change_event) => {
-        let b = Array.from(this.state.tomorrows_predicted_prices)
+        let b = Array.from(this.state.predicted_price)
         console.log(prediction_change_event)
         for (var i in b) {
             var item = b[i]
@@ -132,7 +157,7 @@ class UserForm extends Component {
                 item.price = prediction_change_event.new_price
             }
         }
-        this.setState({tomorrows_predicted_prices: b})
+        this.setState({predicted_price: b})
     }
 
     handleChange = (event) => {
@@ -149,7 +174,6 @@ class UserForm extends Component {
                 {
                     current_portfolio_item: {
                         coin: value,
-                        price_purchased: this.state.current_portfolio_item.price_purchased,
                         amount_purchased: this.state.current_portfolio_item.amount_purchased,
                         max_amount: this.state.current_portfolio_item.max_amount
                     }
@@ -159,7 +183,6 @@ class UserForm extends Component {
                 {
                     current_portfolio_item: {
                         coin: this.state.current_portfolio_item.coin,
-                        price_purchased: value,
                         amount_purchased: this.state.current_portfolio_item.amount_purchased,
                         max_amount: this.state.current_portfolio_item.max_amount
                     }
@@ -169,7 +192,6 @@ class UserForm extends Component {
                 {
                     current_portfolio_item: {
                         coin: this.state.current_portfolio_item.coin,
-                        price_purchased: this.state.current_portfolio_item.price_purchased,
                         amount_purchased: value,
                         max_amount: this.state.current_portfolio_item.max_amount
                     }
@@ -179,14 +201,11 @@ class UserForm extends Component {
                 {
                     current_portfolio_item: {
                         coin: this.state.current_portfolio_item.coin,
-                        price_purchased: this.state.current_portfolio_item.price_purchased,
                         amount_purchased: this.state.current_portfolio_item.amount_purchased,
                         max_amount: value
                     }
                 })
-        } else if (type == "generated-portfolio-name") {
-            this.setState({generated_portfolio_name: value})
-        } 
+        }
     }
 
     handleSubmit = (type) => {
@@ -196,7 +215,7 @@ class UserForm extends Component {
         else if (type === 'next') {
             this.setState({next: true})
         }
-        else if (type == 'submit-portfolio-items'){
+        else if (type == 'submit-portfolio-items') {
             const item = this.state.current_portfolio_item
             if (this.validatePortfolioItem(item)) {
                 this.setState((prevState) => 
@@ -210,15 +229,17 @@ class UserForm extends Component {
         } else if (type === 'generate-portfolio') {
             const lp = 
             {
-                username: this.state.username,
                 current_portfolio: this.state.portfolio,
-                tomorrows_predicted_prices: this.state.tomorrows_predicted_prices
+                predicted_price: this.state.predicted_price
             }
             fetch('/api/generated_portfolio/', {
                 method: 'post',
                 body: JSON.stringify(lp)
               }).then(response => response.json())
-              .then(data => console.log(data))
+              .then(data => {
+                  console.log(data)
+                  this.setState({suggestions: data, open_suggestion_modal: true})
+                })
         }
     };
 
@@ -226,8 +247,8 @@ class UserForm extends Component {
         const { classes } = this.props
         let content
         let rightButton
-
-        if(this.state.current_state === 1) {
+        let current_state = this.state.current_state
+        if(current_state === 1) {
             content = 
             <form className = {classes.container}>
                 <TextField
@@ -241,7 +262,7 @@ class UserForm extends Component {
             </form>
             rightButton = 
                 <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleNextState(this.state.current_state + 1)}>Next</Button>
-        } else if (this.state.current_state === 2) {
+        } else if (current_state === 2) {
             content = 
                 <div>
                     <form className = {classes.container}>
@@ -266,16 +287,6 @@ class UserForm extends Component {
                                 </MenuItem>
                             ))}
                         </TextField>
-                        <TextField
-                                id="price-purchased"
-                                label="Price Purchased"
-                                required
-                                className={classes.textField}
-                                value = {this.state.current_portfolio_item.price_purchased}
-                                placeholder="50.50"
-                                onChange={this.handleChange}
-                                margin="normal"
-                            />
                         <TextField
                             id="amount-purchased"
                             label="Amount Purchased"
@@ -303,7 +314,6 @@ class UserForm extends Component {
                         <TableHead>
                             <TableRow>
                                 <TableCell align="right">Coins</TableCell>
-                                <TableCell align="right">Price Purchased</TableCell>
                                 <TableCell align="right">Amount</TableCell>
                                 <TableCell align="right">Maximum Amount</TableCell>
                             </TableRow>
@@ -313,7 +323,6 @@ class UserForm extends Component {
                                 return(
                                     <TableRow key = {item.coin} >
                                         <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
-                                        <TableCell align="right">{item.price_purchased}</TableCell>
                                         <TableCell align="right">{item.amount_purchased}</TableCell>
                                         <TableCell align="right">{item.max_amount}</TableCell>
                                     </TableRow>)
@@ -323,31 +332,22 @@ class UserForm extends Component {
                 </div>
 
             rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleNextState(this.state.current_state + 1)}>Next</Button>
-        } else if (this.state.current_state === 3) {
+        } else if (current_state === 3) {
             content = 
                 <div>
-                    <TextField
-                        id="generated-portfolio-name"
-                        label="Generated Portfolio Name"
-                        required
-                        className={classes.textField}
-                        value= {this.state.generated_portfolio_name}
-                        onChange={this.handleChange}
-                        margin="normal"
-                    />
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell align="right">Coin</TableCell>
-                                <TableCell align="right">Predicted Price</TableCell>
+                                <TableCell align="center">Coin</TableCell>
+                                <TableCell align="center">Predicted Price</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.state.tomorrows_predicted_prices.map(item => {
+                            {this.state.predicted_price.map(item => {
                                 return(
                                     <TableRow key = {item.coin} >
-                                        <TableCell component="th" scope="row" align="right">{item.coin}</TableCell>
-                                        <TableCell component="th" scope="row" align="right">
+                                        <TableCell component="th" scope="row" align="center">{item.coin}</TableCell>
+                                        <TableCell component="th" scope="row" align="center">
                                             <TextField
                                                 id= "predicted-price"
                                                 label="Predicted Price"
@@ -367,10 +367,26 @@ class UserForm extends Component {
                             })}
                         </TableBody>    
                     </Table>
+                    <Modal  aria-labelledby="simple-modal-title"
+                            aria-describedby="simple-modal-description"
+                            open={this.state.open_suggestion_modal}
+                            onClose={this.handleClose}>
+                        <div style={getModalStyle()} className={classes.paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell align="right">Coin</TableCell>
+                                        <TableCell align="right">Buy/Sell</TableCell>
+                                        <TableCell align="right">Amount</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                            </Table>
+                            <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("save-generate-portfolio")}>Save</Button>
+                        </div>    
+                    </Modal>
                 </div>
-                
                 rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("generate-portfolio")}>Generate Profile</Button>
-        }
+        } 
         
         else if (this.state.back === true) {
             return <Redirect to={{

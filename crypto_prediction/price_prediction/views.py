@@ -77,6 +77,7 @@ class GetCoinPrediciton (generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         coins = json.loads(request.body)
         predictions = {}
+        print(coins)
         for coin in coins:
             predictions[coin] = predict(coin)
         return HttpResponse(json.dumps(predictions))
@@ -84,17 +85,14 @@ class GetCoinPrediciton (generics.CreateAPIView):
 class GetGeneratedPortfolio (generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         req = json.loads(request.body)
-        username = req['username']
         B = User.objects.values_list('budget', flat = True).get(username=username)
-        p = { i['coin'] : float(i['price']) for i in req['tomorrows_predicted_prices']}
-
+        p = { i['coin'] : float(i['price']) for i in req['tomorrows_predicted_prices'] }
         x = []
         c = {}
         f = {}
         for i in req['current_portfolio']['items']:
             x.append(i['coin'])
-            c[i['coin']] = float(i['price_purchased'])
             f[i['coin']] = float(i['max_amount'])
-        
-        print(get_optimal_quantities(x, c, p, B, f))
-        return HttpResponse(json.dumps(req))
+        coin_suggestions = { i : 10 for i in x }
+        # print(get_optimal_quantities(x, c, p, B, f))
+        return HttpResponse(json.dumps(coin_suggestions))
