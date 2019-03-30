@@ -3,9 +3,9 @@ import datetime
 
 # Create your models here.
 class User(models.Model):
-    username = models.CharField(primary_key = True, max_length=100)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
+    username = models.CharField(primary_key = True, max_length=20)
+    first_name = models.CharField(max_length=25)
+    last_name = models.CharField(max_length=25)
     password = models.CharField(max_length=20)
     budget = models.IntegerField(default=0)
     created_date_time = models.DateTimeField(auto_now_add=True)
@@ -32,7 +32,7 @@ class Coin_in_Generated_Portfolio(models.Model):
     portfolio_id = models.ForeignKey(GeneratedPortfolio, on_delete = models.CASCADE)
     coin_id = models.ForeignKey(Coin, on_delete = models.CASCADE)
     amount_purchased = models.FloatField()
-
+    predicted_price = models.FloatField()
     class Meta:
         unique_together = ('coin_id', 'portfolio_id')
 

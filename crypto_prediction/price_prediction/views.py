@@ -72,13 +72,13 @@ class CreateGeneratedPortfolio(generics.CreateAPIView):
 class CreateCoinsInGeneratedPortoflio(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         req = json.loads(request.body)
+        print(req)
         portfolio_id = req['portfolio_id']
         items = req['items']
-        print(req)
         gport =  GeneratedPortfolio.objects.filter(pk=portfolio_id)
         for item in items:
             coin = Coin.objects.filter(pk=item['coin'])
-            Coin_in_Generated_Portfolio(portfolio_id=gport[0], coin_id = coin[0], amount_purchased=item['amount_purchased'] ).save()
+            Coin_in_Generated_Portfolio(portfolio_id=gport[0], coin_id = coin[0], amount_purchased=item['amount_purchased'], predicted_price=item['predicted_price']).save()
         return HttpResponse(json.dumps(req))
 
 
@@ -98,6 +98,7 @@ class GetGeneratedPortfolio (generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         req = json.loads(request.body)
         username = req['username']
+        print(req)
         B = User.objects.values_list('budget', flat = True).get(username=username)
 
         p = { i['coin'] : float(i['price']) for i in req['predicted_price'] }
