@@ -12,6 +12,7 @@ import numpy as np
 import sklearn
 import keras
 import h5py
+from keras import backend
 from keras.models import Sequential
 from keras.layers import Activation, Dense
 from keras.layers import LSTM
@@ -56,7 +57,7 @@ def download_test_crypto (coin):
     dataframe = dataframe.drop("Volume",axis=1)
     return dataframe
 
-def create_outputs(data, coin, window=window):
+def create_outputs(data, window=window):
 #   Function produces the percentage change over a certain window 
     return (data['Close'][window:].values / data['Close'][:-window].values) - 1
 
@@ -105,6 +106,7 @@ def train(coinName):
     coin_model.save_weights(coinName + "_model.h5")
 
 def predict(coin):
+    backend.clear_session()
     json_file = open('./price_prediction/rnn_model_weights/' + coin + '_model.json', 'r')
     loaded_model_json = json_file.read()
     json_file.close()

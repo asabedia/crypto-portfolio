@@ -38,11 +38,13 @@ class Portfolio extends Component {
     state = {
         back: false,
         next: false,
-        portfolio_items: []
+        portfolio_items: [],
+        username:""
     };
 
     componentDidMount() {
         const portfolio_id = this.props.location.state.portfolio_id
+        console.log()
         fetch("api/coin/generated_portfolio/"+portfolio_id+"/")
         .then(response => response.json())
         .then(data => {
@@ -50,12 +52,12 @@ class Portfolio extends Component {
                 return(
                     <TableRow key = {item.coin_id} >
                         <TableCell component="th" scope="row" align="right">{item.coin_id}</TableCell>
-                        <TableCell align="right">{item.price_purhased}</TableCell>
+                        <TableCell align="right">{item.predicted_price}</TableCell>
                         <TableCell align="right">{item.amount_purchased}</TableCell>
                     </TableRow>
                 )
             })
-            this.setState({portfolio_items: portfolio_items})
+            this.setState({portfolio_items: portfolio_items, username: this.props.location.state.username})
         })
     }
 
@@ -83,7 +85,7 @@ class Portfolio extends Component {
         if (this.state.back === true) {
             return <Redirect to={{
                 pathname: '/home', 
-                state: {username: "Soluta ipsum blanditiis dolorem"}
+                state: {username: this.state.username.username}
             }}/>
         }
     

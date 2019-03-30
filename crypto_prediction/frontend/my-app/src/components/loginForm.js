@@ -28,7 +28,7 @@ class LoginForm extends Component {
         if (this.state.login === true) {
             return <Redirect to={{
                 pathname: '/home',
-                state: {username: "Dolorem officiis nemo impedit eligendi ullam"}
+                state: {username: "Laudantium nemo arc"}
             }} />
         }
         if (this.state.register === true) {
