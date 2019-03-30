@@ -1,30 +1,121 @@
 [
-    {
-        "model": "price_prediction.Coin",
-        "pk": 1,
-        "fields": {
-          "name": "bitcoin"
-        }
-    },
-    {
-        "model": "price_prediction.Coin",
-        "pk": 2,
-        "fields": {
-          "name": "ethereum"
-        }
-    },
-    {
-        "model": "price_prediction.Coin",
-        "pk": 3,
-        "fields": {
-          "name": "dash"
-        }
-    },
-    {
-        "model": "price_prediction.Coin",
-        "pk": 4,
-        "fields": {
-          "name": "monero"
-        }
+  {
+    "model": "price_prediction.Coin",
+    "pk": "bitcoin",
+    "fields": {
+      "name": "bitcoin"
     }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "ethereum",
+    "fields": {
+      "name": "ethereum"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "dash",
+    "fields": {
+      "name": "dash"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "monero",
+    "fields": {
+      "name": "monero"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "cardano",
+    "fields": {
+      "name": "cardano"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "eos",
+    "fields": {
+      "name": "eos"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "iota",
+    "fields": {
+      "name": "iota"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "litecoin",
+    "fields": {
+      "name": "litecoin"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "nem",
+    "fields": {
+      "name": "nem"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "neo",
+    "fields": {
+      "name": "neo"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "ontology",
+    "fields": {
+      "name": "ontology"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "ripple",
+    "fields": {
+      "name": "ripple"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "stellar",
+    "fields": {
+      "name": "stellar"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "tezos",
+    "fields": {
+      "name": "tezos"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "tron",
+    "fields": {
+      "name": "tron"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "vechain",
+    "fields": {
+      "name": "vechain"
+    }
+  },
+  {
+    "model": "price_prediction.Coin",
+    "pk": "zcash",
+    "fields": {
+      "name": "zcash"
+    }
+  }
 ]

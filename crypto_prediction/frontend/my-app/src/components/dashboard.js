@@ -9,6 +9,7 @@ import {Form} from "antd/lib/form";
 const styles = theme => ({
     card: {
       minWidth: 200,
+      minHeight: 200,
       marginBottom: 10
     },
     bullet: {
@@ -31,6 +32,7 @@ const styles = theme => ({
 class Dashboard extends Component {
     state = {
         access: {flag: false, portfolio_id: ""},
+        first_name: "",
         new_portfolio: false,
         portfolios: [],
         logged_in_user: ""
@@ -45,13 +47,13 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
+        let first_name = this.props.location.state.first_name
         let {username} = ""
         const { classes } = this.props;
         console.log(this.props.location.state)
         if(this.props.location.state != null){
             username = this.props.location.state.username
-            this.setState({logged_in_user: this.props.location.state})
-            console.log(this.state.logged_in_user)
+            this.setState({logged_in_user: this.props.location.state, first_name: first_name})
         }
         if(username == "" && this.state.logged_in_user != ""){
             username = this.state.logged_in_user
@@ -65,9 +67,7 @@ class Dashboard extends Component {
             })
             .then(results => results.json())
             .then(data => {
-                console.log(data)
                 let portfolios = data.map((portfolio) => {
-                    console.log(portfolio.name)
                     return(
                             <Card className={classes.card}>
                                 <CardContent>
@@ -107,6 +107,9 @@ class Dashboard extends Component {
         }
         return (
             <div style={{margin: "5% 2% 5% 2%"}}>
+                <Typography className={classes.title}>
+                    Welcome {this.state.first_name}
+                </Typography>
                 <Row gutter={16} style={{margin: "5% 2% 0 2%"}}>
                     {this.state.portfolios}
                 </Row>

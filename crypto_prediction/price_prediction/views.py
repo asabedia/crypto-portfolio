@@ -97,6 +97,7 @@ class GetCoinPrediciton (generics.CreateAPIView):
 class GetGeneratedPortfolio (generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         req = json.loads(request.body)
+        print(req)
         username = req['username']
         print(req)
         B = User.objects.values_list('budget', flat = True).get(username=username)
@@ -116,7 +117,7 @@ class GetGeneratedPortfolio (generics.CreateAPIView):
         print(p)
         print(y)
         print(f)
-
+        print(B)
         solution = get_optimal_quantities(y, x, c, p, B, f)
         print(solution)
         return HttpResponse(json.dumps(solution))
