@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  postgres:
+    build: ./crypto_prediction
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+    restart: always
+    hostname: postgres
+    container_name: postgres
+
+  crypto:
+    build: .
+    image: crypto:local
+    command: bash -c "python3 manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    networks:
+      - backend
+      - frontend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: always
+    hostname: crypto
+    container_name: crypto
+  
+  node:
+    build: ./crypto_prediction/frontend/my-app
+    command: ["npm", "start"]
+    depends_on:
+      - crypto
+    networks:
+      - frontend
+    ports:
+      - "3000:3000"
+    restart: always
+    hostname: node
+    container_name: node
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
