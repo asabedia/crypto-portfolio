@@ -8,7 +8,7 @@ import { relativeTimeRounding } from "moment";
 import { Paper, Button, TextField, 
     withStyles, Table, MenuItem, 
     TableBody, TableCell, TableHead,
-    TableRow, Modal, CircularProgress } from "@material-ui/core";
+    TableRow, Modal, CircularProgress, withTheme, Typography } from "@material-ui/core";
 import cloneDeep from "lodash/cloneDeep"
 import { object } from "prop-types";
 
@@ -37,6 +37,11 @@ const styles = theme => ({
       display: 'flex',
       flexWrap: 'wrap',
     },
+    notif: {
+        backgroundColor: 'rgba(15, 188, 86,0.7)',
+        height: 34,
+        padding: theme.spacing.unit
+    },
     paper: {
         position: 'absolute',
         width: theme.spacing.unit * 50,
@@ -63,6 +68,11 @@ const styles = theme => ({
     menu: {
       width: 200,
     },
+    title: {
+        color: 'white',
+        fontSize: 16,
+        marginBottom: theme.spacing.unit
+    }
   });
 
 /*
@@ -88,7 +98,8 @@ class UserForm extends Component {
         predicted_price: [],
         suggestions: [],
         open_suggestion_modal: false,
-        open_loading_modal: false
+        open_loading_modal: false,
+        show_saved_notif: false
     };
 
     validatePortfolioItem = (item) => {
@@ -152,11 +163,8 @@ class UserForm extends Component {
     }
 
     handlePricePredictionChange = (prediction_change_event) => {
-        console.log(this.state.predicted_prices)
         let b = cloneDeep(this.state.predicted_prices)
-        console.log(b)
         b[prediction_change_event.coin] = prediction_change_event.new_price
-        console.log(b)
         this.setState({predicted_prices: b})
     }
 
@@ -280,8 +288,10 @@ class UserForm extends Component {
                             portfolio_id: portfolio_id,
                             items:generated_portofio.items
                         })
-                )})
-                console.log(portfolio_id)                
+                )}).then(response => {
+                    this.setState({open_suggestion_modal: false, show_saved_notif: true})
+                    setTimeout(() => this.setState({show_saved_notif: false}), 2000)
+                })            
             })
             console.log(generated_portofio)
         }
@@ -292,6 +302,17 @@ class UserForm extends Component {
         let content
         let rightButton
         let current_state = this.state.current_state
+        let saved_notif;
+
+        if (this.state.open_suggestion_modal == false && this.state.show_saved_notif== true){
+            saved_notif = 
+            <div className= {classes.notif}>
+                <Typography align="left" className={classes.title} component="h1">
+                    Portfolio has been saved!
+                </Typography>
+            </div>
+        }
+
         if(current_state === 1) {
             content = 
             <form className = {classes.container}>
@@ -309,9 +330,6 @@ class UserForm extends Component {
         } else if (current_state === 2) {
             content = 
                 <div>
-                    <h2 align = "left" >
-                        Please enter the values of your current portfolio below...
-                    </h2>
                     <form className = {classes.container}>
                         <TextField
                             name="select-coin"
@@ -442,19 +460,20 @@ class UserForm extends Component {
                         </div>    
                     </Modal>
                 </div>
-                rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("generate-portfolio")}>Generate Profile</Button>
+                rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("generate-portfolio")}>Generate Portfolio</Button>
         } 
         
         if (this.state.back === true) {
             return <Redirect to={{
                 pathname: '/home', 
-                state: {username: this.state.username}
+                state: {username: this.state.username, first_name: this.props.location.state.first_name}
             }}/>
         }
         
         return (
             <div>
                 <Paper>
+                    {saved_notif}
                     <Modal  aria-labelledby="simple-modal-title"
                             aria-describedby="simple-modal-description"
                             open={this.state.open_loading_modal}
