@@ -3,7 +3,7 @@ import {
     Paper, Button, TextField,
     withStyles, Table, MenuItem,
     TableBody, TableCell, TableHead,
-    TableRow, Modal, CircularProgress
+    TableRow, Modal, CircularProgress, Typography
 } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 const styles = theme => ({
@@ -37,6 +37,9 @@ const styles = theme => ({
     menu: {
         width: 200,
     },
+    title: {
+        fontSize: 32,
+    }
 });
 class LoginForm extends Component {
     state = {
@@ -104,11 +107,14 @@ class LoginForm extends Component {
             return <Redirect to='/register' />
         }
         if (this.state.invalid === true) {
-            invalid = <div><h2>Wrong credentials!</h2></div>
+            invalid = <div className = {classes.invalid}><h3>Wrong credentials!</h3></div>
         }
         return (
             <div style={{ margin: "5% 2% 0 2%" }}>
                 {invalid}
+                <Typography className={classes.title} component="h1">
+                    Crypto App
+                </Typography>
                 <TextField
                     id="username"
                     label="Username"
@@ -125,7 +131,6 @@ class LoginForm extends Component {
                     label="Password"
                     type="password"
                     required
-                    helperText="Please enter the amount of coins"
                     value={this.state.password}
                     className={classes.textField}
                     placeholder="Please enter password"
@@ -135,7 +140,7 @@ class LoginForm extends Component {
                 <br />
                 <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.handleSubmit("login")}>Login</Button>
                 <br />
-                <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.handleSubmit("register")}>Register</Button>
+                <Button variant="contained" color="secondary" className={classes.button} onClick={() => this.handleSubmit("register")}>Register</Button>                <br />
             </div>
         );
     }

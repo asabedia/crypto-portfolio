@@ -460,13 +460,13 @@ class UserForm extends Component {
                         </div>    
                     </Modal>
                 </div>
-                rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("generate-portfolio")}>Generate Profile</Button>
+                rightButton = <Button variant="contained" color="primary" className={classes.button} onClick={() => this.handleSubmit("generate-portfolio")}>Generate Portfolio</Button>
         } 
         
         if (this.state.back === true) {
             return <Redirect to={{
                 pathname: '/home', 
-                state: {username: this.state.username}
+                state: {username: this.state.username, first_name: this.props.location.state.first_name}
             }}/>
         }
         

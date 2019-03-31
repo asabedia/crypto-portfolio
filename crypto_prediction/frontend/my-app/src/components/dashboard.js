@@ -100,10 +100,10 @@ class Dashboard extends Component {
     render() {
         const { classes } = this.props;
         if (this.state.access.flag === true) {
-            return <Redirect to= {{pathname: '/add_portfolio', state: {portfolio_id: this.state.access.portfolio_id, username: this.state.logged_in_user}}}/>
+            return <Redirect to= {{pathname: '/add_portfolio', state: {portfolio_id: this.state.access.portfolio_id, username: this.state.logged_in_user, first_name: this.state.first_name}}}/>
         }
         if (this.state.new_portfolio === true) {
-            return <Redirect to= {{pathname: '/form', state: {username: this.state.logged_in_user}}}/>
+            return <Redirect to= {{pathname: '/form', state: {username: this.state.logged_in_user, first_name: this.state.first_name}}}/>
         }
         return (
             <div style={{margin: "5% 2% 5% 2%"}}>

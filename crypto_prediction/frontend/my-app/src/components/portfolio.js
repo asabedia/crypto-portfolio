@@ -85,7 +85,7 @@ class Portfolio extends Component {
         if (this.state.back === true) {
             return <Redirect to={{
                 pathname: '/home', 
-                state: {username: this.state.username.username}
+                state: {username: this.state.username.username, first_name: this.props.location.state.first_name}
             }}/>
         }
     
